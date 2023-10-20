@@ -29,7 +29,6 @@ func GetBlogs(c *gin.Context) {
 }
 
 func GetBlog(c *gin.Context) {
-	fmt.Println("here!!")
 	// Implement logic to fetch a specific blog Blog by ID from the database
 	db, err := database.InitDB()
 	if err != nil {
@@ -39,7 +38,6 @@ func GetBlog(c *gin.Context) {
 	defer db.Close()
 
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
-	fmt.Println(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
@@ -50,7 +48,6 @@ func GetBlog(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
 		return
 	}
-	fmt.Println("hello?")
 	c.JSON(http.StatusOK, Blogs)
 }
 
@@ -89,7 +86,7 @@ func UpdateBlog(c *gin.Context) {
 	}
 	defer db.Close()
 
-	id, err := strconv.ParseInt(c.Query("id"), 10, 64)
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
@@ -103,7 +100,7 @@ func UpdateBlog(c *gin.Context) {
 	}
 
 	Blogs.Id = id
-	fmt.Println(id)
+
 	_, err = db.NamedExec("UPDATE blogs SET title=:title, content=:content WHERE id=:id", Blogs)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update the blog"})
@@ -115,4 +112,23 @@ func UpdateBlog(c *gin.Context) {
 
 func DeleteBlog(c *gin.Context) {
 	// Implement logic to delete a blog Blog by ID from the database
+	db, err := database.InitDB()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to connect to the database"})
+		return
+	}
+	defer db.Close()
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
+		return
+	}
+
+	_, err = db.Exec("DELETE FROM blogs WHERE id = $1", id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete the blog"})
+		return
+	}
+	c.IndentedJSON(http.StatusNoContent, nil)
 }
