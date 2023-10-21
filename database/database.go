@@ -18,33 +18,25 @@ type Details struct {
 	DBName   string `yaml:"dbname"`
 }
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "david"
-	password = "postgres"
-	dbname   = "postgres"
-)
-
-func getAuthDetails() {
-	auth, err := ioutil.ReadFile("Auth.yaml")
+func (d *Details) getAuthDetails() *Details {
+	file, err := ioutil.ReadFile("Config.yaml")
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("yaml file get err #%v", err)
 	}
-	var data Details
-	err = yaml.Unmarshal(auth, &data)
+	err = yaml.Unmarshal(file, d)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Unmarshal: %v", err)
 	}
-	fmt.Println(data)
-	fmt.Println()
+	return d
 }
 
 func InitDB() (*sqlx.DB, error) {
-	getAuthDetails()
+	var details Details
+	details.getAuthDetails()
+
 	psqlDetails := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		details.Host, details.Port, details.User, details.Password, details.DBName)
 
 	db, err := sqlx.Connect("postgres", psqlDetails)
 	if err != nil {
