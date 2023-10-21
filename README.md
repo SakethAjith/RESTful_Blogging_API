@@ -23,9 +23,10 @@ password: postgres
 dbname: postgres
 ```
 
+## API
 Possible Operations
-1. View all blog posts
-2. View Specific blog post by id
-3. Create a new blog post
-4. Update an existing blog post
-5. Delete a blog post
+1. View all blog posts - GET - "http://localhost:8080/blogs"
+2. View Specific blog post by id - GET - "http://localhost:8080/blogs/:id"
+3. Create a new blog post - POST - "http://localhost:8080/blogs"
+4. Update an existing blog post - PUT - "http://localhost:8080/blogs/:id"
+5. Delete a blog post - DELETE - "http://localhost:8080/blogs/:id"
