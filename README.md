@@ -5,6 +5,10 @@ Tech stack used will be
 * GIN web framework
 * Postgres database
 
+In the database a simple table to store blog data will be created
+```CREATE TABLE BLOG( ID serial PRIMARY KEY, TITLE VARCHAR( 60 ) NOT NULL, CONTENT TEXT)```
+We limit title to 60 characters as that is the ideal title length for blogs to be visible on search engines like google.
+
 Possible Operations
 1. View all blog posts
 2. View Specific blog post by id
