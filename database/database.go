@@ -31,16 +31,17 @@ func getAuthDetails() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	data := Details{}
+	var data Details
 	err = yaml.Unmarshal(auth, &data)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(data.Host)
+	fmt.Println(data)
 	fmt.Println()
 }
 
 func InitDB() (*sqlx.DB, error) {
+	getAuthDetails()
 	psqlDetails := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
