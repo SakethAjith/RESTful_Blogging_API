@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -18,6 +19,7 @@ func validId(id int64, db *gorm.DB, c *gin.Context) bool {
 	var blogs models.Blogs
 	check := db.Where("id=?", id).First(&blogs)
 
+	errors.Is(check.Error, gorm.ErrRecordNotFound)
 	if check.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Blog with that Id does not exist"})
 		return false
