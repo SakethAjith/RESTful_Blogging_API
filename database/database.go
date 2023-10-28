@@ -5,9 +5,11 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/SakethAjith/RESTfulBlog/models"
 	_ "github.com/lib/pq"
-	"gopkg.in/yaml.v3"
+	"gopkg.in/yaml.v2"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Details struct {
@@ -30,18 +32,19 @@ func (d *Details) getAuthDetails() *Details {
 	return d
 }
 
-func InitDB() (*sqlx.DB, error) {
+var DB *gorm.DB
+
+func InitDB() (*gorm.DB, error) {
 	var details Details
 	details.getAuthDetails()
-
-	psqlDetails := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		details.Host, details.Port, details.User, details.Password, details.DBName)
-
-	db, err := sqlx.Connect("postgres", psqlDetails)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable", details.Host, details.User, details.Password, details.DBName, details.Port)
+	DB, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	// AutoMigrate will create the "blogs" table if it doesn't exist
+	DB.AutoMigrate(&models.Blogs{})
+
+	return DB, nil
 }
